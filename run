@@ -4,4 +4,12 @@ set -xe
 
 clang main.c -o app
 
+
+# tests
+if 1 < 0; then
+./app "A"
+./app "AAB"
+./app "AAABBCCC"
+fi
+
 ./app

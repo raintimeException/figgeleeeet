@@ -3,8 +3,9 @@
 #include <string.h>
 #include <assert.h>
 
-#define FONT_SZ 5
-#define LETTER_WIDTH 7
+#define FONT_H 5
+#define FONT_W 7
+
 #define TOTAL_LETTERS 128
 
 #define ARRSZ(x) (sizeof(x)/sizeof(*x))
@@ -15,7 +16,7 @@
 #define TO_UPPER_CASE(c) (((c) >= 'a' && (c) <= 'z') ? c -= 32 : c)
 #define TO_LOWER_CASE(c) (((c) >= 'A' && (c) <= 'Z') ? c += 32 : c)
 
-typedef enum {false, true}bool;
+typedef enum {false, true} bool;
 
 bool _is_space(char c)
 {
@@ -25,14 +26,21 @@ bool _is_space(char c)
 
 typedef struct {
     char c;
-    char data[FONT_SZ][LETTER_WIDTH];
+    char data[FONT_H][FONT_W];
 } Font;
+
+
+bool char_is_allowed(char c)
+{
+    assert(c >= 'A' && c <= 'Z' || _is_space(c));
+    return true;
+}
 
 Font *get_font_from_font_arr_with_c(Font *font_arr, int font_arr_len, char c)
 {
     assert(font_arr != NULL);
     assert(font_arr_len >= 0);
-    assert(c >= 'A' && c <= 'Z' || _is_space(c));
+    assert(char_is_allowed(c) == true);
 
     for (int pos = 0; pos < font_arr_len; ++pos) {
         if (font_arr[pos].c == c)
@@ -44,17 +52,17 @@ Font *get_font_from_font_arr_with_c(Font *font_arr, int font_arr_len, char c)
 void _null_terminate_font_data_row(Font *font, int row)
 {
     assert(font != NULL);
-    assert(row <= FONT_SZ);
+    assert(row <= FONT_H);
 
-    font->data[row][LETTER_WIDTH-1] = 0;
-    assert(font->data[row][LETTER_WIDTH-1] == 0);
+    font->data[row][FONT_W-1] = 0;
+    assert(font->data[row][FONT_W-1] == 0);
 }
 
 char *get_data_row_from_font(Font *font_arr, int font_arr_len, int row, char c) {
     assert(font_arr != NULL);
     assert(font_arr_len >= 0);
-    assert(row <= FONT_SZ);
-    assert(c >= 'A' && c <= 'Z' || _is_space(c));
+    assert(row <= FONT_H);
+    assert(char_is_allowed(c) == true);
 
     Font *_font = get_font_from_font_arr_with_c(font_arr, font_arr_len, c);
     assert(_font != NULL);
@@ -257,7 +265,7 @@ Font font_arr[] = {
 };
 
 
-char *glyph[TOTAL_LETTERS][FONT_SZ];
+char *glyph[TOTAL_LETTERS][FONT_H];
 
 int main(int argc, char *argv[])
 {
@@ -272,11 +280,11 @@ int main(int argc, char *argv[])
     char *chars = *argv;
     int chars_count = strlen(chars);
 
-    char *out[FONT_SZ];
+    char *out[FONT_H];
     char *line;
-    int line_len = LETTER_WIDTH * chars_count * sizeof(char) + 1;
+    int line_len = FONT_W * chars_count * sizeof(char) + 1;
 
-    for (int row = 0; row < FONT_SZ; ++row) {
+    for (int row = 0; row < FONT_H; ++row) {
         out[row] = malloc(line_len*sizeof(char) + 1);
         assert(out[row] != NULL);
         line = malloc(line_len*sizeof(char) + 1);
@@ -290,7 +298,7 @@ int main(int argc, char *argv[])
         memcpy(out[row], line, line_len - 1);
     }
 
-    for (int i = 0; i < FONT_SZ; ++i) {
+    for (int i = 0; i < FONT_H; ++i) {
         printf("%s\n", out[i]);
     }
     return 0;

@@ -2,8 +2,7 @@
 
 set -xe
 
-clang main.c -o app
+clang -Wall -Wextra main.c -o app
 
-
-# ./app "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+# time ./app "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 ./app

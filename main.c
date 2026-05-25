@@ -49,15 +49,6 @@ Font *get_font_from_font_arr_with_c(Font *font_arr, int font_arr_len, char c)
     return NULL;
 }
 
-void _null_terminate_font_data_row(Font *font, int row)
-{
-    assert(font != NULL);
-    assert(row <= FONT_H);
-
-    font->data[row][FONT_W-1] = 0;
-    assert(font->data[row][FONT_W-1] == 0);
-}
-
 char *get_data_row_from_font(Font *font_arr, int font_arr_len, int row, char c) {
     assert(font_arr != NULL);
     assert(font_arr_len >= 0);
@@ -67,7 +58,6 @@ char *get_data_row_from_font(Font *font_arr, int font_arr_len, int row, char c) 
     Font *_font = get_font_from_font_arr_with_c(font_arr, font_arr_len, c);
     assert(_font != NULL);
 
-    _null_terminate_font_data_row(_font, row);
     return _font->data[row];
 }
 
@@ -285,11 +275,16 @@ int main(int argc, char *argv[])
     int line_len = FONT_W * chars_count * sizeof(char) + 1;
 
     for (int row = 0; row < FONT_H; ++row) {
-        out[row] = malloc(line_len*sizeof(char) + 1);
-        assert(out[row] != NULL);
-        line = malloc(line_len*sizeof(char) + 1);
-        assert(line != NULL);
-
+        {
+            out[row] = malloc(line_len);
+            assert(out[row] != NULL);
+            memset(out[row], 0, line_len);
+        }
+        {
+            line = malloc(line_len);
+            assert(line != NULL);
+            memset(line, 0, line_len);
+        }
         for (int ci = 0; ci < chars_count; ++ci) {
             char c = TO_UPPER_CASE(chars[ci]);
             char *data = get_data_row_from_font(font_arr, ARRSZ(font_arr), row, c);
@@ -307,6 +302,4 @@ int main(int argc, char *argv[])
 /*
  * TODO:
  * [] give the possibility choose the size of the font x2, x3
- * [] no libs, only standard... (unistd.h)
- * [] no heap allocation
  */
